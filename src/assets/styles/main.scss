@@ -1,0 +1,19 @@
+// src/assets/styles/main.scss
+//
+// Single stylesheet entry point, imported once in main.js.
+// Order matters: tokens must load before Bootstrap so the variable
+// overrides actually take effect (Bootstrap reads them at compile time).
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+@import './tokens';
+@import 'bootstrap/scss/bootstrap';
+
+// Base element styles not covered by a Bootstrap variable
+body {
+  font-family: $font-body;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-heading;
+}

@@ -14,9 +14,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Exported singletons — import these in Pinia stores and views rather than
-// calling getAuth()/getFirestore() again elsewhere, so the whole app shares
-// one connection.
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const functions = getFunctions(app);

@@ -1,0 +1,136 @@
+// src/assets/styles/_tokens.scss
+//
+// Design tokens extracted from the Assessment 1 Figma design.
+// Source of truth: docs/DESIGN_TOKENS.md — update there first, then here.
+//
+// Per SCOPE.md rule 1, these override Bootstrap 5's defaults rather than
+// using them as-is, so the built app matches the Figma palette exactly.
+//
+// Naming follows a deliberate two-tier pattern noted in DESIGN_TOKENS.md:
+// a vivid colour for fills/icons/borders, paired with a darkened "-text"
+// sibling that's safe to use as text on the matching "-surface" tint. This
+// makes AA contrast compliance visible in the variable name itself, not
+// just in a contrast-checker result someone has to trust after the fact.
+
+// ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+
+$font-heading: 'Poppins', sans-serif;
+$font-body: 'Inter', sans-serif;
+
+// ---------------------------------------------------------------------------
+// Brand / primary (blue)
+// ---------------------------------------------------------------------------
+
+$primary: #2F80ED;
+$primary-tint: rgba(#2F80ED, 0.094);   // badge / chip backgrounds
+$primary-hover: #1A65CF;               // hover / pressed state
+$primary-link: #1447E6;                // accessible link colour
+$primary-surface: #EBF4FD;
+$primary-surface-alt: #DBEAFE;
+$primary-surface-light: #EFF6FF;
+
+// Hero gradient (Home/Landing only) — see DESIGN_TOKENS.md accessibility
+// note: white text over the light stop only passes AA at large-text sizes.
+$hero-gradient-start: #2F80ED;
+$hero-gradient-end: #1557B0;
+$hero-gradient: linear-gradient(135deg, $hero-gradient-start 0%, $hero-gradient-end 100%);
+
+// ---------------------------------------------------------------------------
+// Success (green)
+// ---------------------------------------------------------------------------
+
+$success: #27AE60;
+$success-tint: rgba(#27AE60, 0.094);
+$success-text: #007A55;      // use for text on $success-surface
+$success-text-dark: #166534;
+$success-surface: #EAFAF1;
+$success-surface-alt: #ECFDF5;
+
+// ---------------------------------------------------------------------------
+// Warning (amber)
+// ---------------------------------------------------------------------------
+
+$warning: #F2C94C;           // decorative only — fails AA as text, never use for copy
+$warning-tint: rgba(#F2C94C, 0.094);
+$rating-gold: #FFB900;       // star rating fill only — pair with a text value
+$warning-text: #854D0E;      // pairs with $warning-surface
+$warning-text-dark: #973C00; // pairs with $warning-surface-alt (Appointments)
+$warning-text-accent: #BB4D00;
+$warning-surface: #FEF9E7;
+$warning-surface-alt: #FFFBEB;
+$warning-surface-appt: #FEF3C6;
+
+// ---------------------------------------------------------------------------
+// Danger (red)
+// ---------------------------------------------------------------------------
+
+$danger: #FB2C36;
+$danger-soft: #EB5757;       // borderline contrast — prefer $danger for error text
+$danger-tint: rgba(#EB5757, 0.094);
+$danger-surface: #FEE2E2;
+
+// ---------------------------------------------------------------------------
+// Accent (purple)
+// ---------------------------------------------------------------------------
+
+$accent: #9B51E0;
+$accent-tint: rgba(#9B51E0, 0.094);
+$accent-text: #8200DB;       // pairs with $accent-surface (Resources)
+$accent-surface: #F3EAFD;
+$accent-surface-alt: #FAF5FF;
+
+// ---------------------------------------------------------------------------
+// Neutrals — text
+// ---------------------------------------------------------------------------
+
+$text-black: #000000;
+$text-primary: #101828;      // ~17.9:1 on white
+$text-heading-alt: #1E2939;
+$text-resources: #1F2937;
+$overlay-scrim: rgba(#1F2937, 0.5); // modal / overlay backdrop
+$text-secondary: #364153;    // ~9.6:1
+$text-body: #4A5565;         // ~7.4:1
+$text-muted: #6A7282;        // ~4.9:1 — passes normal text, but only just; check size
+$text-placeholder: #99A1AF;  // ~2.4:1 — placeholder/disabled ONLY, never body copy
+$text-placeholder-admin: #9CA3AF; // same restriction, Admin variant
+
+// ---------------------------------------------------------------------------
+// Neutrals — surfaces & borders
+// ---------------------------------------------------------------------------
+
+$surface-card: #FFFFFF;
+$surface-page: #F9FAFB;
+$surface-subtle: #F8FAFC;
+$surface-hover: #F3F4F6;
+$surface-admin: #F0F2F5;
+$border: #E5E7EB;
+$border-strong: #D1D5DC;     // Resources
+
+// ---------------------------------------------------------------------------
+// Bootstrap 5 variable overrides
+// ---------------------------------------------------------------------------
+// These map Bootstrap's own variables onto the Figma tokens above, so
+// components using Bootstrap defaults (buttons, alerts, form controls)
+// pick up the CareBridge palette automatically instead of Bootstrap blue.
+
+$body-color: $text-body;
+$body-bg: $surface-page;
+$link-color: $primary-link;
+$link-hover-color: $primary-hover;
+
+$font-family-sans-serif: $font-body;
+$headings-font-family: $font-heading;
+$headings-color: $text-primary;
+
+$success: $success;
+$warning: $warning;
+$danger: $danger;
+$info: $primary;
+
+$border-color: $border;
+
+// Bootstrap's focus ring must stay visible per ACCESSIBILITY_CHECKLIST.md —
+// do not remove or override this to transparent anywhere in the app.
+$focus-ring-color: rgba($primary, 0.5);
