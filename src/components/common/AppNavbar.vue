@@ -1,6 +1,10 @@
 <script setup>
-import { ref } from "vue";
-import { RouterLink } from "vue-router";
+import { ref, computed } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
+const router = useRouter();
 
 const isOpen = ref(false);
 const toggleNav = () => {
@@ -9,6 +13,23 @@ const toggleNav = () => {
 const closeNav = () => {
   isOpen.value = false;
 };
+
+const initials = computed(() => {
+  const name = authStore.profile?.displayName || "";
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+});
+
+async function handleLogout() {
+  await authStore.logout();
+  closeNav();
+  router.push({ name: "home" });
+}
 </script>
 
 <template>
@@ -60,20 +81,55 @@ const closeNav = () => {
                 >Find Services</RouterLink
               >
             </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/login" @click="closeNav"
-                >Log in</RouterLink
+
+            <li v-if="authStore.isAuthenticated" class="nav-item">
+              <RouterLink class="nav-link" to="/appointments" @click="closeNav"
+                >Appointments</RouterLink
               >
             </li>
-            <li class="nav-item">
-              <RouterLink
-                class="btn btn-primary btn-nav-cta ms-md-2"
-                to="/register"
-                @click="closeNav"
+
+            <li v-if="authStore.isAdmin" class="nav-item">
+              <RouterLink class="nav-link" to="/admin" @click="closeNav"
+                >Admin</RouterLink
               >
-                Get Started
-              </RouterLink>
             </li>
+
+            <!-- Guest state -->
+            <template v-if="!authStore.isAuthenticated">
+              <li class="nav-item">
+                <RouterLink class="nav-link" to="/login" @click="closeNav"
+                  >Log in</RouterLink
+                >
+              </li>
+              <li class="nav-item">
+                <RouterLink
+                  class="btn btn-primary btn-nav-cta ms-md-2"
+                  to="/register"
+                  @click="closeNav"
+                >
+                  Get Started
+                </RouterLink>
+              </li>
+            </template>
+
+            <!-- Authenticated state -->
+            <template v-else>
+              <li class="nav-item d-flex align-items-center gap-2 ms-md-2">
+                <span class="user-avatar" aria-hidden="true">{{
+                  initials
+                }}</span>
+                <span class="user-name d-none d-lg-inline">{{
+                  authStore.profile?.displayName
+                }}</span>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-logout"
+                  @click="handleLogout"
+                >
+                  Log out
+                </button>
+              </li>
+            </template>
           </ul>
         </div>
       </div>
@@ -135,9 +191,42 @@ const closeNav = () => {
   }
 }
 
+.user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #2f80ed;
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.user-name {
+  color: #101828;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.btn-logout {
+  color: #364153;
+  border-color: #e5e7eb;
+
+  &:hover,
+  &:focus-visible {
+    color: #101828;
+    background: #f3f4f6;
+    border-color: #d1d5dc;
+  }
+}
+
 .nav-link:focus-visible,
 .navbar-brand:focus-visible,
-.navbar-toggler:focus-visible {
+.navbar-toggler:focus-visible,
+.btn-logout:focus-visible {
   outline: 3px solid #2f80ed;
   outline-offset: 2px;
 }
