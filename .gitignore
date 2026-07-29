@@ -10,3 +10,5 @@ functions/node_modules/
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+scripts/serviceAccountKey.json

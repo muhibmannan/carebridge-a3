@@ -5,6 +5,8 @@ import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import ForbiddenView from "@/views/ForbiddenView.vue";
+import ResourcesView from "@/views/ResourcesView.vue";
+import ResourceDetailView from "@/views/ResourceDetailView.vue";
 
 const AdminDashboardView = () => import("@/views/admin/AdminDashboardView.vue");
 
@@ -33,7 +35,18 @@ const routes = [
     component: ForbiddenView,
     meta: { title: "Access denied — CareBridge" },
   },
-
+  {
+    path: "/resources",
+    name: "resources",
+    component: ResourcesView,
+    meta: { title: "Resources — CareBridge" },
+  },
+  {
+    path: "/resources/:id",
+    name: "resource-detail",
+    component: ResourceDetailView,
+    meta: { title: "Resource — CareBridge" },
+  },
   {
     path: "/admin",
     name: "admin",
@@ -56,20 +69,14 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   document.title = to.meta.title || "CareBridge";
-
   const authStore = useAuthStore();
 
-  if (to.meta.guestOnly && authStore.isAuthenticated) {
-    return { name: "home" };
-  }
-
+  if (to.meta.guestOnly && authStore.isAuthenticated) return { name: "home" };
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return { name: "login", query: { redirect: to.fullPath } };
   }
-
-  if (to.meta.roles && !to.meta.roles.includes(authStore.role)) {
+  if (to.meta.roles && !to.meta.roles.includes(authStore.role))
     return { name: "forbidden" };
-  }
 
   return true;
 });
