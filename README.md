@@ -37,12 +37,12 @@ You'll need a `.env.local` file with the Firebase config — see
 
 ```bash
 npm run build     # production build
-firebase deploy   # deploy to hosting
+firebase deploy --only hosting   # deploy to hosting
 ```
 
 ## Live link
 
-Not deployed yet — will add the URL here once it's up (Day 7 of the plan).
+https://carebridge-a3.web.app
 
 ## Docs
 
