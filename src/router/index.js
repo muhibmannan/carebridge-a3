@@ -9,6 +9,9 @@ import ResourcesView from "@/views/ResourcesView.vue";
 import ResourceDetailView from "@/views/ResourceDetailView.vue";
 
 const AdminDashboardView = () => import("@/views/admin/AdminDashboardView.vue");
+const AdminUsersView = () => import("@/views/admin/AdminUsers.vue");
+const AdminAppointmentsView = () =>
+  import("@/views/admin/AdminAppointments.vue");
 
 const routes = [
   {
@@ -53,6 +56,26 @@ const routes = [
     component: AdminDashboardView,
     meta: {
       title: "Admin dashboard — CareBridge",
+      requiresAuth: true,
+      roles: ["admin"],
+    },
+  },
+  {
+    path: "/admin/users",
+    name: "admin-users",
+    component: AdminUsersView,
+    meta: {
+      title: "Users — Admin — CareBridge",
+      requiresAuth: true,
+      roles: ["admin"],
+    },
+  },
+  {
+    path: "/admin/appointments",
+    name: "admin-appointments",
+    component: AdminAppointmentsView,
+    meta: {
+      title: "Appointments — Admin — CareBridge",
       requiresAuth: true,
       roles: ["admin"],
     },

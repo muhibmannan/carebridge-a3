@@ -12,7 +12,7 @@ const authStore = useAuthStore();
       <strong>{{ authStore.role }}</strong
       >.
     </p>
-    <p class="note">Dashboard content is built on Day 12.</p>
+    <p class="note">Dashboard content to be built.</p>
   </main>
 </template>
 

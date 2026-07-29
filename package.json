@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "seed:resources": "node scripts/seed-resources.mjs"
+    "seed:resources": "node scripts/seed-resources.mjs",
+    "seed:appointments": "node scripts/seed-appointments.mjs"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
