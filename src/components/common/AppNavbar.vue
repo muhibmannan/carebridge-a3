@@ -25,6 +25,22 @@ const initials = computed(() => {
     .toUpperCase();
 });
 
+const allLinks = [
+  { name: "resources", label: "Resources" },
+  { name: "map", label: "Find Services" },
+  { name: "appointments", label: "Appointments", requiresAuth: true },
+  { name: "admin", label: "Admin", adminOnly: true },
+];
+
+const navLinks = computed(() =>
+  allLinks.filter((link) => {
+    if (!router.hasRoute(link.name)) return false;
+    if (link.requiresAuth && !authStore.isAuthenticated) return false;
+    if (link.adminOnly && !authStore.isAdmin) return false;
+    return true;
+  }),
+);
+
 async function handleLogout() {
   await authStore.logout();
   closeNav();
@@ -71,30 +87,16 @@ async function handleLogout() {
           :class="{ show: isOpen }"
         >
           <ul class="navbar-nav ms-auto align-items-md-center gap-md-2">
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/resources" @click="closeNav"
-                >Resources</RouterLink
+            <li v-for="link in navLinks" :key="link.name" class="nav-item">
+              <RouterLink
+                class="nav-link"
+                :to="{ name: link.name }"
+                @click="closeNav"
               >
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/map" @click="closeNav"
-                >Find Services</RouterLink
-              >
-            </li>
-
-            <li v-if="authStore.isAuthenticated" class="nav-item">
-              <RouterLink class="nav-link" to="/appointments" @click="closeNav"
-                >Appointments</RouterLink
-              >
+                {{ link.label }}
+              </RouterLink>
             </li>
 
-            <li v-if="authStore.isAdmin" class="nav-item">
-              <RouterLink class="nav-link" to="/admin" @click="closeNav"
-                >Admin</RouterLink
-              >
-            </li>
-
-            <!-- Guest state -->
             <template v-if="!authStore.isAuthenticated">
               <li class="nav-item">
                 <RouterLink class="nav-link" to="/login" @click="closeNav"
@@ -112,15 +114,24 @@ async function handleLogout() {
               </li>
             </template>
 
-            <!-- Authenticated state -->
             <template v-else>
               <li class="nav-item d-flex align-items-center gap-2 ms-md-2">
                 <span class="user-avatar" aria-hidden="true">{{
                   initials
                 }}</span>
-                <span class="user-name d-none d-lg-inline">{{
-                  authStore.profile?.displayName
-                }}</span>
+
+                <span class="visually-hidden">
+                  Signed in as {{ authStore.profile?.displayName }},
+                  {{ authStore.role }} account
+                </span>
+
+                <span class="user-meta d-none d-lg-flex" aria-hidden="true">
+                  <span class="user-name">{{
+                    authStore.profile?.displayName
+                  }}</span>
+                  <span class="user-role">{{ authStore.role }}</span>
+                </span>
+
                 <button
                   type="button"
                   class="btn btn-outline-secondary btn-logout"
@@ -205,10 +216,21 @@ async function handleLogout() {
   font-size: 0.8rem;
 }
 
+.user-meta {
+  flex-direction: column;
+  line-height: 1.2;
+}
+
 .user-name {
   color: #101828;
   font-weight: 500;
   font-size: 0.9rem;
+}
+
+.user-role {
+  color: #6a7282;
+  font-size: 0.75rem;
+  text-transform: capitalize;
 }
 
 .btn-logout {

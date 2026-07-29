@@ -10,7 +10,7 @@ const features = [
   {
     icon: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z",
     title: "Resource Library",
-    text: "Search and filter guides on NDIS planning, equipment funding, housing and more — rated by the community that uses them.",
+    text: "Search and filter guides on NDIS planning, equipment funding, housing and more - rated by the community that uses them.",
     link: "/resources",
     linkText: "Browse resources",
     tint: "primary",
@@ -48,7 +48,7 @@ const features = [
             <p class="hero-subtext">
               CareBridge connects people living with disabilities, their
               families, carers and support workers with essential healthcare
-              services, community resources and support programs — all in one
+              services, community resources and support programs - all in one
               accessible platform.
             </p>
             <div class="hero-actions">
@@ -75,7 +75,7 @@ const features = [
         </h2>
         <p class="section-subheading">
           CareBridge brings together the tools people told us they were missing
-          — built around real NDIS journeys, not generic forms.
+          - built around real NDIS journeys, not generic forms.
         </p>
 
         <div class="row g-4 mt-2">
@@ -123,7 +123,7 @@ const features = [
               Enable Collective is a charity dedicated to making disability
               support easier to find and easier to use. CareBridge was built
               with participants, carers and support workers to remove the
-              friction between people and the services they're entitled to —
+              friction between people and the services they're entitled to -
               from finding the right allied health provider, to booking an
               appointment, to understanding a funding plan.
             </p>

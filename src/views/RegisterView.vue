@@ -12,6 +12,36 @@
         support.
       </p>
 
+      <div
+        v-if="submitted && errorList.length"
+        ref="summaryRef"
+        class="form-alert form-summary"
+        role="alert"
+        tabindex="-1"
+      >
+        <p class="summary-heading">
+          <span aria-hidden="true">⚠</span>
+          There
+          {{
+            errorList.length === 1
+              ? "is 1 problem"
+              : `are ${errorList.length} problems`
+          }}
+          with this form
+        </p>
+        <ul>
+          <li v-for="item in errorList" :key="item.field">
+            <button
+              type="button"
+              class="summary-link"
+              @click="focusField(item.field)"
+            >
+              {{ item.label }}: {{ item.message }}
+            </button>
+          </li>
+        </ul>
+      </div>
+
       <form @submit.prevent="handleSubmit" novalidate>
         <div class="form-group">
           <label for="displayName">Full name</label>
@@ -24,14 +54,15 @@
             required
             :aria-invalid="!!fieldErrors.displayName"
             :aria-describedby="
-              fieldErrors.displayName ? 'name-error' : undefined
+              fieldErrors.displayName ? 'displayName-error' : undefined
             "
+            @blur="handleBlur('displayName')"
+            @input="handleInput('displayName')"
           />
           <p
             v-if="fieldErrors.displayName"
-            id="name-error"
+            id="displayName-error"
             class="field-error"
-            role="alert"
           >
             <span aria-hidden="true">⚠</span> {{ fieldErrors.displayName }}
           </p>
@@ -48,13 +79,10 @@
             required
             :aria-invalid="!!fieldErrors.email"
             :aria-describedby="fieldErrors.email ? 'email-error' : undefined"
+            @blur="handleBlur('email')"
+            @input="handleInput('email')"
           />
-          <p
-            v-if="fieldErrors.email"
-            id="email-error"
-            class="field-error"
-            role="alert"
-          >
+          <p v-if="fieldErrors.email" id="email-error" class="field-error">
             <span aria-hidden="true">⚠</span> {{ fieldErrors.email }}
           </p>
         </div>
@@ -70,14 +98,21 @@
             required
             :aria-invalid="!!fieldErrors.password"
             :aria-describedby="
-              fieldErrors.password ? 'password-error' : undefined
+              fieldErrors.password
+                ? 'password-error password-hint'
+                : 'password-hint'
             "
+            @blur="handleBlur('password')"
+            @input="handleInput('password')"
           />
+          <p id="password-hint" class="field-hint">
+            At least 8 characters, with an uppercase letter, a lowercase letter
+            and a number.
+          </p>
           <p
             v-if="fieldErrors.password"
             id="password-error"
             class="field-error"
-            role="alert"
           >
             <span aria-hidden="true">⚠</span> {{ fieldErrors.password }}
           </p>
@@ -94,14 +129,15 @@
             required
             :aria-invalid="!!fieldErrors.confirmPassword"
             :aria-describedby="
-              fieldErrors.confirmPassword ? 'confirm-error' : undefined
+              fieldErrors.confirmPassword ? 'confirmPassword-error' : undefined
             "
+            @blur="handleBlur('confirmPassword')"
+            @input="handleInput('confirmPassword')"
           />
           <p
             v-if="fieldErrors.confirmPassword"
-            id="confirm-error"
+            id="confirmPassword-error"
             class="field-error"
-            role="alert"
           >
             <span aria-hidden="true">⚠</span> {{ fieldErrors.confirmPassword }}
           </p>
@@ -125,9 +161,14 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import {
+  validateRegisterForm,
+  REGISTER_FIELDS,
+  FIELD_LABELS,
+} from "@/utils/validators";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -144,35 +185,70 @@ const fieldErrors = reactive({
   confirmPassword: "",
 });
 
-function validate() {
-  fieldErrors.displayName = displayName.value.trim()
-    ? ""
-    : "Enter your full name.";
-  fieldErrors.email = email.value ? "" : "Enter your email address.";
-  fieldErrors.password =
-    password.value.length >= 6 ? "" : "Password must be at least 6 characters.";
-  fieldErrors.confirmPassword =
-    confirmPassword.value === password.value ? "" : "Passwords do not match.";
+const touched = reactive({});
+const submitted = ref(false);
+const summaryRef = ref(null);
 
-  return !Object.values(fieldErrors).some(Boolean);
+const errorList = computed(() =>
+  REGISTER_FIELDS.filter((field) => fieldErrors[field]).map((field) => ({
+    field,
+    label: FIELD_LABELS[field],
+    message: fieldErrors[field],
+  })),
+);
+
+function runValidation() {
+  const errors = validateRegisterForm({
+    displayName: displayName.value,
+    email: email.value,
+    password: password.value,
+    confirmPassword: confirmPassword.value,
+  });
+
+  REGISTER_FIELDS.forEach((field) => {
+    fieldErrors[field] =
+      errors[field] && (submitted.value || touched[field]) ? errors[field] : "";
+  });
+
+  return Object.keys(errors).length === 0;
+}
+
+function handleBlur(field) {
+  touched[field] = true;
+  runValidation();
+}
+
+function handleInput(field) {
+  if (fieldErrors[field]) runValidation();
 }
 
 async function handleSubmit() {
-  if (!validate()) return;
+  submitted.value = true;
+
+  if (!runValidation()) {
+    await nextTick();
+    summaryRef.value?.focus();
+    return;
+  }
+
   try {
     await authStore.register({
       displayName: displayName.value.trim(),
-      email: email.value,
+      email: email.value.trim(),
       password: password.value,
     });
     router.push({ name: "home" });
   } catch {}
 }
+
+function focusField(field) {
+  document.getElementById(field)?.focus();
+}
 </script>
 
 <style scoped>
 .auth-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 72px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,12 +319,22 @@ async function handleSubmit() {
   outline-offset: 1px;
   border-color: #2f80ed;
 }
+.form-control[aria-invalid="true"] {
+  border-color: #fb2c36;
+}
+.field-hint {
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125rem;
+  color: #6a7282;
+  margin: 0.375rem 0 0;
+}
 .field-error {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  color: #fb2c36;
+  color: #b91c1c;
   font-size: 0.875rem;
+  font-weight: 500;
   margin-top: 0.375rem;
 }
 .form-alert {
@@ -256,11 +342,40 @@ async function handleSubmit() {
   align-items: center;
   gap: 0.5rem;
   background: #fee2e2;
-  color: #fb2c36;
+  color: #b91c1c;
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   margin-bottom: 1rem;
+}
+.form-summary {
+  display: block;
+  border: 1px solid #fb2c36;
+}
+.form-summary .summary-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+.form-summary ul {
+  margin: 0;
+  padding-left: 1.125rem;
+  font-size: 0.875rem;
+}
+.summary-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #b91c1c;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.summary-link:focus-visible {
+  outline: 2px solid #b91c1c;
+  outline-offset: 2px;
 }
 .btn-primary {
   width: 100%;

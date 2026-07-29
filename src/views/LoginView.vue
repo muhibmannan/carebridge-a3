@@ -36,18 +36,34 @@
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            class="form-control"
-            autocomplete="current-password"
-            required
-            :aria-invalid="!!fieldErrors.password"
-            :aria-describedby="
-              fieldErrors.password ? 'password-error' : undefined
-            "
-          />
+          <div class="password-field">
+            <input
+              id="password"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              class="form-control"
+              autocomplete="current-password"
+              required
+              :aria-invalid="!!fieldErrors.password"
+              :aria-describedby="
+                fieldErrors.password ? 'password-error' : undefined
+              "
+            />
+            <!--
+              aria-pressed communicates the toggle state to screen readers;
+              aria-label gives it a name since it's icon-only. The field's
+              visibility change is announced through the button's pressed state.
+            -->
+            <button
+              type="button"
+              class="password-toggle"
+              :aria-pressed="showPassword"
+              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              @click="showPassword = !showPassword"
+            >
+              {{ showPassword ? "Hide" : "Show" }}
+            </button>
+          </div>
           <p
             v-if="fieldErrors.password"
             id="password-error"
@@ -77,14 +93,16 @@
 
 <script setup>
 import { ref, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
+const route = useRoute(); // was missing — this is what caused the no-redirect bug
 const authStore = useAuthStore();
 
 const email = ref("");
 const password = ref("");
+const showPassword = ref(false);
 const fieldErrors = reactive({ email: "", password: "" });
 
 function validate() {
@@ -96,8 +114,16 @@ function validate() {
 async function handleSubmit() {
   if (!validate()) return;
   try {
-    await authStore.login({ email: email.value, password: password.value });
-    router.push({ name: "home" });
+    await authStore.login({
+      email: email.value.trim(),
+      password: password.value,
+    });
+
+    // Honour the ?redirect= the router guard adds when it bounces an
+    // unauthenticated user off a protected route, so login returns them to
+    // where they were headed. Falls back to home for a direct login.
+    const redirect = route.query.redirect;
+    router.push(redirect ? { path: redirect } : { name: "home" });
   } catch {
     // authStore.error already holds a user-facing message
   }
@@ -106,7 +132,8 @@ async function handleSubmit() {
 
 <style scoped>
 .auth-page {
-  min-height: 100vh;
+  /* 72px = navbar height, so the card centres in the visible area */
+  min-height: calc(100vh - 72px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,12 +204,47 @@ async function handleSubmit() {
   outline-offset: 1px;
   border-color: #2f80ed;
 }
+.form-control[aria-invalid="true"] {
+  border-color: #fb2c36;
+}
+/* Wraps the input so the toggle sits inside the field's right edge */
+.password-field {
+  position: relative;
+}
+.password-field .form-control {
+  padding-right: 4rem; /* room for the toggle */
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1447e6;
+  cursor: pointer;
+  border-radius: 0.375rem;
+}
+.password-toggle:hover {
+  background: #eff6ff;
+}
+.password-toggle:focus-visible {
+  outline: 2px solid #2f80ed;
+  outline-offset: 2px;
+}
+/* Error TEXT uses the darkened sibling #B91C1C (passes AA); the vivid
+   #FB2C36 stays on borders/surfaces only, where 3:1 is enough. */
 .field-error {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  color: #fb2c36;
+  color: #b91c1c;
   font-size: 0.875rem;
+  font-weight: 500;
   margin-top: 0.375rem;
 }
 .form-alert {
@@ -190,7 +252,7 @@ async function handleSubmit() {
   align-items: center;
   gap: 0.5rem;
   background: #fee2e2;
-  color: #fb2c36;
+  color: #b91c1c;
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
