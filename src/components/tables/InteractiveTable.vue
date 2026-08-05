@@ -7,7 +7,12 @@ const props = defineProps({
   rowKey: { type: String, default: "id" },
   caption: { type: String, required: true },
   pageSize: { type: Number, default: 10 },
+  selectable: { type: Boolean, default: false },
+  selected: { type: Array, default: () => [] },
+  selectionLabel: { type: Function, default: null },
 });
+
+const emit = defineEmits(["update:selected"]);
 
 const sortKey = ref(null);
 const sortDir = ref("asc");
@@ -88,6 +93,51 @@ const rangeLabel = computed(() => {
   );
   return `Showing ${start}–${end} of ${sortedRows.value.length}`;
 });
+
+const selectedSet = computed(() => new Set(props.selected));
+
+function isSelected(row) {
+  return selectedSet.value.has(row[props.rowKey]);
+}
+
+function toggleRow(row) {
+  const key = row[props.rowKey];
+  const next = new Set(selectedSet.value);
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
+  emit("update:selected", [...next]);
+}
+
+const allFilteredSelected = computed(
+  () =>
+    filteredRows.value.length > 0 &&
+    filteredRows.value.every((row) => isSelected(row)),
+);
+
+const someFilteredSelected = computed(
+  () =>
+    !allFilteredSelected.value &&
+    filteredRows.value.some((row) => isSelected(row)),
+);
+
+function toggleAllFiltered() {
+  const next = new Set(selectedSet.value);
+  if (allFilteredSelected.value) {
+    filteredRows.value.forEach((row) => next.delete(row[props.rowKey]));
+  } else {
+    filteredRows.value.forEach((row) => next.add(row[props.rowKey]));
+  }
+  emit("update:selected", [...next]);
+}
+
+function labelFor(row) {
+  if (props.selectionLabel) return props.selectionLabel(row);
+  return String(row[props.rowKey]);
+}
+
+const columnCount = computed(
+  () => props.columns.length + (props.selectable ? 1 : 0),
+);
 </script>
 
 <template>
@@ -103,6 +153,20 @@ const rangeLabel = computed(() => {
         </caption>
         <thead>
           <tr>
+            <th v-if="selectable" scope="col" class="select-cell">
+              <input
+                id="select-all-rows"
+                type="checkbox"
+                class="form-check-input"
+                :checked="allFilteredSelected"
+                :indeterminate.prop="someFilteredSelected"
+                :disabled="!filteredRows.length"
+                @change="toggleAllFiltered"
+              />
+              <label for="select-all-rows" class="visually-hidden">
+                Select all {{ filteredRows.length }} matching rows
+              </label>
+            </th>
             <th
               v-for="col in columns"
               :key="col.key"
@@ -127,6 +191,7 @@ const rangeLabel = computed(() => {
             </th>
           </tr>
           <tr class="filter-row">
+            <th v-if="selectable" scope="col" class="select-cell"></th>
             <th v-for="col in columns" :key="`${col.key}-filter`" scope="col">
               <template v-if="col.searchable !== false">
                 <label :for="`filter-${col.key}`" class="visually-hidden">
@@ -144,7 +209,23 @@ const rangeLabel = computed(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in pagedRows" :key="row[rowKey]">
+          <tr
+            v-for="row in pagedRows"
+            :key="row[rowKey]"
+            :class="{ 'row--selected': selectable && isSelected(row) }"
+          >
+            <td v-if="selectable" class="select-cell">
+              <input
+                :id="`select-${row[rowKey]}`"
+                type="checkbox"
+                class="form-check-input"
+                :checked="isSelected(row)"
+                @change="toggleRow(row)"
+              />
+              <label :for="`select-${row[rowKey]}`" class="visually-hidden">
+                Select {{ labelFor(row) }}
+              </label>
+            </td>
             <td v-for="col in columns" :key="col.key">
               <slot
                 :name="`cell-${col.key}`"
@@ -156,7 +237,7 @@ const rangeLabel = computed(() => {
             </td>
           </tr>
           <tr v-if="!pagedRows.length">
-            <td :colspan="columns.length" class="empty-row">
+            <td :colspan="columnCount" class="empty-row">
               No matching results.
             </td>
           </tr>
@@ -224,6 +305,21 @@ const rangeLabel = computed(() => {
   padding: 0.4rem 0.5rem;
 }
 
+.select-cell {
+  width: 2.75rem;
+  text-align: center;
+}
+
+.select-cell .form-check-input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.select-cell .form-check-input:focus-visible {
+  outline: 2px solid #2f80ed;
+  outline-offset: 2px;
+}
+
 .th-sort-btn {
   display: inline-flex;
   align-items: center;
@@ -256,6 +352,10 @@ const rangeLabel = computed(() => {
 
 .table tbody tr:hover {
   background: #f8fafc;
+}
+
+.table tbody tr.row--selected {
+  background: #ebf4fd;
 }
 
 .empty-row {
