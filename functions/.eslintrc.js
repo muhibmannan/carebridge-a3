@@ -4,7 +4,7 @@ module.exports = {
     node: true,
   },
   parserOptions: {
-    ecmaVersion: 2018,
+    ecmaVersion: 2020,
   },
   extends: [
     "eslint:recommended",
@@ -17,6 +17,7 @@ module.exports = {
     "require-jsdoc": "off",
     "valid-jsdoc": "off",
     "max-len": ["error", {"code": 120}],
+    "new-cap": ["error", {"capIsNewExceptions": ["Router"]}],
   },
   overrides: [
     {
