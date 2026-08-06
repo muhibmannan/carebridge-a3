@@ -12,6 +12,7 @@ const AdminDashboardView = () => import("@/views/admin/AdminDashboardView.vue");
 const AdminUsersView = () => import("@/views/admin/AdminUsers.vue");
 const AdminAppointmentsView = () =>
   import("@/views/admin/AdminAppointments.vue");
+const MapView = () => import("@/views/MapView.vue");
 
 const routes = [
   {
@@ -49,6 +50,12 @@ const routes = [
     name: "resource-detail",
     component: ResourceDetailView,
     meta: { title: "Resource — CareBridge" },
+  },
+  {
+    path: "/map",
+    name: "map",
+    component: MapView,
+    meta: { title: "Services near you — CareBridge" },
   },
   {
     path: "/admin",
