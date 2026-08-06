@@ -111,7 +111,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="map-view">
+  <div class="container map-view">
     <header class="page-header">
       <h1 class="page-title">Services near you</h1>
       <p class="page-subtitle">
@@ -270,7 +270,7 @@ onMounted(() => {
 <style scoped>
 
 .map-view {
-  padding: 2rem 0;
+  padding-block: 2rem;
 }
 
 .page-title {
