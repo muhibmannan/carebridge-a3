@@ -13,6 +13,7 @@ const AdminUsersView = () => import("@/views/admin/AdminUsers.vue");
 const AdminAppointmentsView = () =>
   import("@/views/admin/AdminAppointments.vue");
 const MapView = () => import("@/views/MapView.vue");
+const AppointmentsView = () => import("@/views/AppointmentsView.vue");
 
 const routes = [
   {
@@ -56,6 +57,12 @@ const routes = [
     name: "map",
     component: MapView,
     meta: { title: "Services near you — CareBridge" },
+  },
+  {
+    path: "/appointments",
+    name: "appointments",
+    component: AppointmentsView,
+    meta: { title: "Appointments — CareBridge", requiresAuth: true },
   },
   {
     path: "/admin",
