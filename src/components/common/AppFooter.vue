@@ -45,7 +45,11 @@ const year = new Date().getFullYear();
         <nav class="col-6 col-md-3" aria-label="Support">
           <h2 class="footer-heading">Support</h2>
           <ul class="footer-links">
-            <li><a href="#main-content">Accessibility statement</a></li>
+            <li>
+              <RouterLink to="/accessibility"
+                >Accessibility statement</RouterLink
+              >
+            </li>
             <li>
               <a href="mailto:support@enablecollective.org.au"
                 >Contact support</a

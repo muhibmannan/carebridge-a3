@@ -1,0 +1,1 @@
+export const AdminDataKey = Symbol("carebridge:admin-data");

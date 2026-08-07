@@ -1,25 +1,30 @@
 <script setup>
+import { computed } from "vue";
 import { RouterLink } from "vue-router";
-import { onMounted } from "vue";
+import { useAuthStore } from "@/stores/auth";
 
-onMounted(() => {
-  document.title = "CareBridge — Support, simplified";
-});
+const authStore = useAuthStore();
 
-const features = [
+const primaryCta = computed(() =>
+  authStore.isAuthenticated
+    ? { to: "/appointments", label: "Go to your appointments" }
+    : { to: "/register", label: "Get Started" },
+);
+
+const features = computed(() => [
   {
     icon: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z",
     title: "Resource Library",
     text: "Search and filter guides on NDIS planning, equipment funding, housing and more - rated by the community that uses them.",
     link: "/resources",
-    linkText: "Browse resources",
+    linkText: "Search the library",
     tint: "primary",
   },
   {
     icon: "M8 2v4 M16 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
     title: "Appointment Booking",
     text: "Book allied health and support appointments with real-time availability, and get an emailed summary automatically.",
-    link: "/register",
+    link: "/appointments",
     linkText: "Book an appointment",
     tint: "success",
   },
@@ -31,7 +36,7 @@ const features = [
     linkText: "Open the services map",
     tint: "accent",
   },
-];
+]);
 </script>
 
 <template>
@@ -53,10 +58,10 @@ const features = [
             </p>
             <div class="hero-actions">
               <RouterLink
-                to="/register"
+                :to="primaryCta.to"
                 class="btn btn-light btn-lg hero-btn-primary"
               >
-                Get Started
+                {{ primaryCta.label }}
               </RouterLink>
               <RouterLink to="/resources" class="btn btn-outline-light btn-lg">
                 Browse Resources
@@ -144,16 +149,19 @@ const features = [
       </div>
     </section>
 
-    <!-- Closing CTA -->
-    <section class="cta-band" aria-labelledby="cta-heading">
+    <section
+      v-if="!authStore.isAuthenticated"
+      class="cta-band"
+      aria-labelledby="cta-heading"
+    >
       <div class="container text-center">
         <h2 id="cta-heading" class="cta-heading">Ready to get started?</h2>
         <p class="cta-subtext">
           Create a free CareBridge account in under two minutes.
         </p>
-        <RouterLink to="/register" class="btn btn-primary btn-lg"
-          >Create your account</RouterLink
-        >
+        <RouterLink to="/register" class="btn btn-primary btn-lg">
+          Create your account
+        </RouterLink>
       </div>
     </section>
   </div>

@@ -1,30 +1,21 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "@/firebase";
+import { ref, computed, inject } from "vue";
 import { formatDate, toTimestampNumber } from "@/utils/dates";
 import InteractiveTable from "@/components/tables/InteractiveTable.vue";
 import BulkEmailModal from "@/components/admin/BulkEmailModal.vue";
+import { AdminDataKey } from "./adminDataKey";
 
-const users = ref([]);
-const loading = ref(true);
-const error = ref(null);
+const admin = inject(AdminDataKey);
+
+const users = computed(() =>
+  [...admin.users.value].sort(
+    (a, b) => toTimestampNumber(b.createdAt) - toTimestampNumber(a.createdAt),
+  ),
+);
 
 const selectedUids = ref([]);
 const showBulkEmail = ref(false);
 const sendResult = ref(null);
-
-onMounted(async () => {
-  try {
-    const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    users.value = snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
-  } catch (err) {
-    error.value = "Could not load users. " + err.message;
-  } finally {
-    loading.value = false;
-  }
-});
 
 const columns = [
   { key: "displayName", label: "Name" },
@@ -58,64 +49,61 @@ function onSent(result) {
 </script>
 
 <template>
-  <section class="admin-users">
-    <header class="admin-page-header">
-      <h1>Users</h1>
-      <p class="text-muted">{{ users.length }} registered users</p>
+  <section class="admin-users" aria-labelledby="admin-users-heading">
+    <header class="panel-header">
+      <h2 id="admin-users-heading">Users</h2>
+      <p class="panel-meta">{{ users.length }} registered users</p>
     </header>
 
-    <p v-if="loading">Loading users…</p>
-    <p v-else-if="error" role="alert" class="error-text">{{ error }}</p>
-
-    <template v-else>
-      <div class="table-toolbar">
-        <p class="selection-count" aria-live="polite">
-          {{ selectedUids.length }} selected
-        </p>
-        <div class="toolbar-actions">
-          <button
-            v-if="selectedUids.length"
-            type="button"
-            class="btn-secondary"
-            @click="clearSelection"
-          >
-            Clear selection
-          </button>
-          <button
-            type="button"
-            class="btn-primary"
-            :disabled="!selectedUids.length"
-            @click="showBulkEmail = true"
-          >
-            Email selected
-          </button>
-        </div>
-      </div>
-
-      <p v-if="sendResult" class="send-success" role="status">
-        <span aria-hidden="true">✓ </span>Email sent to
-        {{ sendResult.sent }} recipient{{ sendResult.sent === 1 ? "" : "s" }}<template
-          v-if="sendResult.skipped"
-        >
-          ({{ sendResult.skipped }} skipped — no email address on
-          file)</template
-        >.
+    <div class="table-toolbar">
+      <p class="selection-count" aria-live="polite">
+        {{ selectedUids.length }} selected
       </p>
+      <div class="toolbar-actions">
+        <button
+          v-if="selectedUids.length"
+          type="button"
+          class="btn-secondary"
+          @click="clearSelection"
+        >
+          Clear selection
+        </button>
+        <button
+          type="button"
+          class="btn-primary"
+          :disabled="!selectedUids.length"
+          @click="showBulkEmail = true"
+        >
+          Email selected
+        </button>
+      </div>
+    </div>
 
-      <InteractiveTable
-        v-model:selected="selectedUids"
-        :columns="columns"
-        :rows="users"
-        row-key="uid"
-        selectable
-        :selection-label="selectionLabel"
-        caption="CareBridge registered users, sortable, searchable and selectable"
-      >
-        <template #cell-role="{ value }">
-          <span class="badge" :class="`badge--${value}`">{{ value }}</span>
-        </template>
-      </InteractiveTable>
-    </template>
+    <p v-if="sendResult" class="send-success" role="status">
+      <span aria-hidden="true">✓ </span>Email sent to
+      {{ sendResult.sent }} recipient{{ sendResult.sent === 1 ? "" : "s"
+      }}<template v-if="sendResult.skipped">
+        ({{ sendResult.skipped }} skipped — no email address on
+        file)</template
+      >.
+    </p>
+
+    <InteractiveTable
+      v-model:selected="selectedUids"
+      :columns="columns"
+      :rows="users"
+      row-key="uid"
+      selectable
+      exportable
+      export-name="carebridge-users"
+      export-title="CareBridge — Registered users"
+      :selection-label="selectionLabel"
+      caption="CareBridge registered users, sortable, searchable, selectable and exportable"
+    >
+      <template #cell-role="{ value }">
+        <span class="badge" :class="`badge--${value}`">{{ value }}</span>
+      </template>
+    </InteractiveTable>
 
     <BulkEmailModal
       v-if="showBulkEmail"
@@ -127,12 +115,21 @@ function onSent(result) {
 </template>
 
 <style scoped>
-.admin-page-header {
-  margin-bottom: 1.25rem;
+.panel-header {
+  margin-bottom: 1rem;
 }
-.admin-page-header h1 {
+
+.panel-header h2 {
   font-family: "Poppins", sans-serif;
+  font-size: 1.25rem;
   color: #101828;
+  margin: 0;
+}
+
+.panel-meta {
+  color: #6a7282;
+  font-size: 0.9rem;
+  margin: 0.2rem 0 0;
 }
 
 .table-toolbar {
@@ -204,10 +201,6 @@ function onSent(result) {
   padding: 0.6rem 0.85rem;
   font-size: 0.875rem;
   margin-bottom: 0.75rem;
-}
-
-.error-text {
-  color: #b91c1c;
 }
 
 .badge {

@@ -1,5 +1,10 @@
 <script setup>
 import { ref, reactive, computed, watch } from "vue";
+import {
+  exportRowsToCsv,
+  exportRowsToPdf,
+  dateStamp,
+} from "@/utils/exporters";
 
 const props = defineProps({
   columns: { type: Array, required: true },
@@ -10,6 +15,10 @@ const props = defineProps({
   selectable: { type: Boolean, default: false },
   selected: { type: Array, default: () => [] },
   selectionLabel: { type: Function, default: null },
+  // E.4 — data export
+  exportable: { type: Boolean, default: false },
+  exportName: { type: String, default: "carebridge-export" },
+  exportTitle: { type: String, default: "CareBridge export" },
 });
 
 const emit = defineEmits(["update:selected"]);
@@ -138,11 +147,73 @@ function labelFor(row) {
 const columnCount = computed(
   () => props.columns.length + (props.selectable ? 1 : 0),
 );
+
+const exportRows = computed(() => {
+  if (props.selectable && props.selected.length) {
+    return sortedRows.value.filter((row) => isSelected(row));
+  }
+  return sortedRows.value;
+});
+
+const exportScopeLabel = computed(() => {
+  const count = exportRows.value.length;
+  const noun = count === 1 ? "row" : "rows";
+  if (props.selectable && props.selected.length) {
+    return `Exporting ${count} selected ${noun}`;
+  }
+  const isFiltered = filteredRows.value.length !== props.rows.length;
+  return `Exporting ${count} ${isFiltered ? "filtered " : ""}${noun}`;
+});
+
+const exportSubtitle = computed(
+  () =>
+    `${exportRows.value.length} records · generated ${new Date().toLocaleString("en-AU")}`,
+);
+
+function onExportCsv() {
+  exportRowsToCsv({
+    columns: props.columns,
+    rows: exportRows.value,
+    filename: `${props.exportName}-${dateStamp()}.csv`,
+  });
+}
+
+function onExportPdf() {
+  exportRowsToPdf({
+    columns: props.columns,
+    rows: exportRows.value,
+    filename: `${props.exportName}-${dateStamp()}.pdf`,
+    title: props.exportTitle,
+    subtitle: exportSubtitle.value,
+  });
+}
 </script>
 
 <template>
   <div class="interactive-table">
-    <p class="range-label" aria-live="polite">{{ rangeLabel }}</p>
+    <div class="table-bar">
+      <p class="range-label" aria-live="polite">{{ rangeLabel }}</p>
+
+      <div v-if="exportable" class="export-actions">
+        <p class="export-scope" aria-live="polite">{{ exportScopeLabel }}</p>
+        <button
+          type="button"
+          class="btn-export"
+          :disabled="!exportRows.length"
+          @click="onExportCsv"
+        >
+          Export CSV
+        </button>
+        <button
+          type="button"
+          class="btn-export"
+          :disabled="!exportRows.length"
+          @click="onExportPdf"
+        >
+          Export PDF
+        </button>
+      </div>
+    </div>
 
     <div class="table-scroll">
       <table class="table">
@@ -272,10 +343,57 @@ const columnCount = computed(
 </template>
 
 <style scoped>
+.table-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
 .range-label {
   font-size: 0.875rem;
   color: #6a7282;
-  margin-bottom: 0.5rem;
+  margin: 0;
+}
+
+.export-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.export-scope {
+  font-size: 0.8rem;
+  color: #6a7282;
+  margin: 0;
+}
+
+.btn-export {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #364153;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-export:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.btn-export:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-export:focus-visible {
+  outline: 2px solid #2f80ed;
+  outline-offset: 2px;
 }
 
 .table-scroll {
