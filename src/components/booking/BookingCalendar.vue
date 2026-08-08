@@ -200,7 +200,7 @@ onMounted(() => {
   background: #2f80ed;
 }
 .booking-calendar :deep(.is-today .fc-day-cell-inner) {
-  background: #2f80ed;
+  background: #1a65cf;
   color: #ffffff;
   font-weight: 600;
 }

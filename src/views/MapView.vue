@@ -308,8 +308,8 @@ onMounted(() => {
 }
 
 .filter-pill--active {
-  background-color: #2F80ED;
-  border-color: #2F80ED;
+  background-color: #1A65CF;
+  border-color: #1A65CF;
   color: #FFFFFF;
 }
 
@@ -368,7 +368,7 @@ onMounted(() => {
 }
 
 .btn-primary-cb {
-  background-color: #2F80ED;
+  background-color: #1A65CF;
   color: #FFFFFF;
   border: none;
   border-radius: 0.75rem;
@@ -377,7 +377,7 @@ onMounted(() => {
 }
 
 .btn-primary-cb:hover:not(:disabled) {
-  background-color: #1A65CF;
+  background-color: #1557B0;
 }
 
 .btn-primary-cb:disabled {
