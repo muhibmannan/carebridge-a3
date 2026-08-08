@@ -33,10 +33,9 @@ const subtitle = computed(() => {
       <div
         class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3"
       >
-        <div
-          class="category-pills"
-          role="tablist"
-          aria-label="Filter resources by category"
+        <div class="category-pills" 
+        role="group" 
+        aria-label="Filter resources by category"
         >
           <button
             v-for="cat in store.categories"
@@ -197,8 +196,8 @@ const subtitle = computed(() => {
   cursor: pointer;
 }
 .pill--active {
-  background: #2f80ed;
-  border-color: #2f80ed;
+  background: #1a65cf;
+  border-color: #1a65cf;
   color: #ffffff;
 }
 .pill:focus-visible {
