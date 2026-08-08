@@ -12,6 +12,7 @@ const props = defineProps({
 
 const emit = defineEmits(["select-category"]);
 
+
 const SEGMENT_COLOURS = [
   "#2F80ED",
   "#27AE60",
@@ -22,6 +23,10 @@ const SEGMENT_COLOURS = [
   "#BB4D00",
   "#1557B0",
 ];
+
+const total = computed(() =>
+  props.categories.reduce((sum, item) => sum + item.count, 0),
+);
 
 const chartData = computed(() => ({
   labels: props.categories.map((c) => c.category),
@@ -34,7 +39,7 @@ const chartData = computed(() => ({
       borderColor: "#FFFFFF",
       borderWidth: 2,
       offset: props.categories.map((c) =>
-        c.category === props.selectedCategory ? 12 : 0,
+        c.category === props.selectedCategory ? 10 : 0,
       ),
     },
   ],
@@ -43,7 +48,9 @@ const chartData = computed(() => ({
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
-  cutout: "62%",
+  cutout: "72%",
+  rotation: -90,
+  circumference: 180,
   onClick: (event, elements) => {
     if (!elements.length) return;
     const item = props.categories[elements[0].index];
@@ -65,10 +72,7 @@ const chartOptions = computed(() => ({
 }));
 
 function selectCategory(category) {
-  emit(
-    "select-category",
-    props.selectedCategory === category ? null : category,
-  );
+  emit("select-category", props.selectedCategory === category ? null : category);
 }
 
 function colourFor(index) {
@@ -89,7 +93,14 @@ const selected = computed(() =>
         aria-hidden="true"
         role="presentation"
       />
+      <p class="chart-centre">
+        <span class="chart-centre-value">{{ total }}</span>
+        <span class="chart-centre-label">
+          Resource{{ total === 1 ? "" : "s" }}
+        </span>
+      </p>
     </div>
+
 
     <ul class="legend">
       <li v-for="(item, index) in categories" :key="item.category">
@@ -105,7 +116,7 @@ const selected = computed(() =>
             aria-hidden="true"
           ></span>
           <span class="legend-label">{{ item.category }}</span>
-          <span class="legend-value">{{ item.share }}%</span>
+          <span class="legend-value">{{ item.count }}</span>
         </button>
       </li>
     </ul>
@@ -113,12 +124,13 @@ const selected = computed(() =>
     <p class="chart-detail" aria-live="polite">
       <template v-if="selected">
         <strong>{{ selected.category }}</strong> — {{ selected.count }}
-        resource{{ selected.count === 1 ? "" : "s" }}, mean rating
+        resource{{ selected.count === 1 ? "" : "s" }} ({{ selected.share }}%),
+        mean rating
         {{ selected.avgRating ? selected.avgRating.toFixed(1) : "not yet rated"
         }}<template v-if="selected.avgRating"> out of 5</template>.
       </template>
       <template v-else>
-        Select a category for its resource count and mean rating.
+        Select a category for its share and mean rating.
       </template>
     </p>
   </div>
@@ -126,12 +138,39 @@ const selected = computed(() =>
 
 <style scoped>
 .chart-canvas {
-  height: 200px;
+  position: relative;
+  height: 150px;
+  padding-top: 0.25rem;
+}
+
+.chart-centre {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  pointer-events: none;
+}
+
+.chart-centre-value {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #101828;
+  line-height: 1.1;
+}
+
+.chart-centre-label {
+  font-size: 0.8rem;
+  color: #6a7282;
 }
 
 .legend {
   list-style: none;
-  margin: 1rem 0 0;
+  margin: 0.75rem 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -181,7 +220,8 @@ const selected = computed(() =>
 }
 
 .legend-value {
-  color: #6a7282;
+  color: #101828;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 

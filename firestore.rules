@@ -12,12 +12,14 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
+
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
-      allow create: if isOwner(uid);
+      allow create: if isOwner(uid) && request.resource.data.role == 'user';
       allow update: if isOwner(uid) && request.resource.data.role == resource.data.role;
       allow delete: if false;
     }
+
     match /resources/{resourceId} {
       allow read: if true;
       allow create, delete: if isAdmin();

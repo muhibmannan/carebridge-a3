@@ -193,7 +193,7 @@ function initialsOf(user) {
 
   &[aria-pressed="true"] {
     background: #ffffff;
-    color: #2f80ed;
+    color: #1447e6;
   }
 
   &:focus-visible {
@@ -256,7 +256,7 @@ function initialsOf(user) {
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background: #2f80ed;
+  background: #1557b0;
   color: #ffffff;
   display: flex;
   align-items: center;

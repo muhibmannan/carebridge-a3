@@ -49,11 +49,7 @@
                 fieldErrors.password ? 'password-error' : undefined
               "
             />
-            <!--
-              aria-pressed communicates the toggle state to screen readers;
-              aria-label gives it a name since it's icon-only. The field's
-              visibility change is announced through the button's pressed state.
-            -->
+
             <button
               type="button"
               class="password-toggle"
@@ -97,7 +93,7 @@ import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
-const route = useRoute(); // was missing — this is what caused the no-redirect bug
+const route = useRoute();
 const authStore = useAuthStore();
 
 const email = ref("");
@@ -119,20 +115,15 @@ async function handleSubmit() {
       password: password.value,
     });
 
-    // Honour the ?redirect= the router guard adds when it bounces an
-    // unauthenticated user off a protected route, so login returns them to
-    // where they were headed. Falls back to home for a direct login.
     const redirect = route.query.redirect;
     router.push(redirect ? { path: redirect } : { name: "home" });
   } catch {
-    // authStore.error already holds a user-facing message
   }
 }
 </script>
 
 <style scoped>
 .auth-page {
-  /* 72px = navbar height, so the card centres in the visible area */
   min-height: calc(100vh - 72px);
   display: flex;
   align-items: center;
@@ -207,12 +198,11 @@ async function handleSubmit() {
 .form-control[aria-invalid="true"] {
   border-color: #fb2c36;
 }
-/* Wraps the input so the toggle sits inside the field's right edge */
 .password-field {
   position: relative;
 }
 .password-field .form-control {
-  padding-right: 4rem; /* room for the toggle */
+  padding-right: 4rem;
 }
 .password-toggle {
   position: absolute;
@@ -236,8 +226,6 @@ async function handleSubmit() {
   outline: 2px solid #2f80ed;
   outline-offset: 2px;
 }
-/* Error TEXT uses the darkened sibling #B91C1C (passes AA); the vivid
-   #FB2C36 stays on borders/surfaces only, where 3:1 is enough. */
 .field-error {
   display: flex;
   align-items: center;

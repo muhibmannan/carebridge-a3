@@ -15,7 +15,6 @@ const props = defineProps({
   selectable: { type: Boolean, default: false },
   selected: { type: Array, default: () => [] },
   selectionLabel: { type: Function, default: null },
-  // E.4 — data export
   exportable: { type: Boolean, default: false },
   exportName: { type: String, default: "carebridge-export" },
   exportTitle: { type: String, default: "CareBridge export" },

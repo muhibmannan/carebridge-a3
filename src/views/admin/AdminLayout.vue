@@ -520,7 +520,7 @@ function exportReport() {
 
 .tab--active {
   background: #ffffff;
-  color: #2f80ed;
+  color: #1447e6;
 }
 
 .admin-panel {
