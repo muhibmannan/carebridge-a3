@@ -248,7 +248,7 @@ async function handleSubmit() {
 }
 .btn-primary {
   width: 100%;
-  background: #2f80ed;
+  background: #1a65cf;
   color: #ffffff;
   border: none;
   border-radius: 0.5rem;

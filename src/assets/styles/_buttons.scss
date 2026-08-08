@@ -1,0 +1,45 @@
+@use 'tokens' as *;
+
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #{$primary-strong};
+  --bs-btn-border-color: #{$primary-strong};
+
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #{$primary-stronger};
+  --bs-btn-hover-border-color: #{$primary-stronger};
+
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #{$primary-stronger};
+  --bs-btn-active-border-color: #{$primary-stronger};
+
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #{$primary-strong};
+  --bs-btn-disabled-border-color: #{$primary-strong};
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #{$primary-link};
+  --bs-btn-border-color: #{$primary};
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #{$primary-strong};
+  --bs-btn-hover-border-color: #{$primary-strong};
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #{$primary-stronger};
+  --bs-btn-active-border-color: #{$primary-stronger};
+}
+
+a:not(.btn),
+.text-primary {
+  color: $primary-link;
+}
+
+a:not(.btn):hover {
+  color: $primary-stronger;
+}
+
+.btn:focus-visible {
+  outline: 3px solid $primary-link;
+  outline-offset: 2px;
+  box-shadow: none;
+}

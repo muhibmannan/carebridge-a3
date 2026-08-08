@@ -294,13 +294,13 @@ onBeforeUnmount(() => {
 }
 
 .btn-primary {
-  background: #2f80ed;
-  border: 1px solid #2f80ed;
+  background: #1a65cf;
+  border: 1px solid #1a65cf;
   color: #ffffff;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1a65cf;
+  background: #1557b0;
   border-color: #1a65cf;
 }
 

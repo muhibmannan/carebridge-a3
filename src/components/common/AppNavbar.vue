@@ -192,13 +192,13 @@ async function handleLogout() {
 }
 
 .btn-nav-cta {
-  background: #2f80ed;
-  border-color: #2f80ed;
+  background: #1a65cf;
+  border-color: #1a65cf;
 
   &:hover,
   &:focus-visible {
-    background: #1a65cf;
-    border-color: #1a65cf;
+    background: #1557b0;
+    border-color: #1557b0;
   }
 }
 
@@ -209,7 +209,7 @@ async function handleLogout() {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #2f80ed;
+  background: #1a65cf;
   color: #ffffff;
   font-family: "Inter", sans-serif;
   font-weight: 600;

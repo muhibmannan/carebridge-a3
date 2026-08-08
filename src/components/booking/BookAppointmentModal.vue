@@ -300,9 +300,9 @@ button:focus-visible {
   cursor: pointer;
 }
 .time-chip.selected {
-  background: #2f80ed;
+  background: #1a65cf;
   color: #ffffff;
-  border-color: #2f80ed;
+  border-color: #1a65cf;
 }
 .time-chip.taken {
   background: #f3f4f6;
@@ -329,7 +329,7 @@ button:focus-visible {
   margin-top: 8px;
 }
 .btn-primary {
-  background: #2f80ed;
+  background: #1a65cf;
   color: #ffffff;
   border: none;
   padding: 10px 20px;

@@ -196,7 +196,7 @@ function formatTimeRange(appt) {
   margin: 4px 0 0;
 }
 .btn-primary {
-  background: #2f80ed;
+  background: #1a65cf;
   color: #ffffff;
   border: none;
   padding: 10px 18px;
