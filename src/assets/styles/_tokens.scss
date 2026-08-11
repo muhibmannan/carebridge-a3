@@ -1,24 +1,26 @@
-// ---------------------------------------------------------------------------
-// Typography
-// ---------------------------------------------------------------------------
+// Design tokens pulled from the CareBridge Figma file.
+// Contrast ratios noted below are measured against white.
+
+// ---- Type ----
 
 $font-heading: "Poppins", sans-serif;
 $font-body: "Inter", sans-serif;
 
-// ---------------------------------------------------------------------------
-// Brand / primary (blue)
-// ---------------------------------------------------------------------------
+// ---- Brand (blue) ----
 
+// #2f80ed only hits 3.86:1, so it can't legally carry text at body size.
+// Use it for fills, icons and borders. Anything with words in it gets
+// $primary-hover (5.5:1) or $primary-link.
 $primary: #2f80ed;
-$primary-tint: rgba(#2f80ed, 0.094); // badge / chip backgrounds
-$primary-hover: #1a65cf; // hover / pressed state
-$primary-link: #1447e6; // accessible link colour
+$primary-tint: rgba(#2f80ed, 0.094);
+$primary-hover: #1a65cf;
+$primary-link: #1447e6;
 $primary-surface: #ebf4fd;
 $primary-surface-alt: #dbeafe;
 $primary-surface-light: #eff6ff;
 
-// Hero gradient (Home/Landing only) — see DESIGN_TOKENS.md accessibility
-// note: white text over the light stop only passes AA at large-text sizes.
+// Home hero only. White text over the light end of this passes AA at
+// heading sizes but not body sizes, so keep small copy over the dark end.
 $hero-gradient-start: #2f80ed;
 $hero-gradient-end: #1557b0;
 $hero-gradient: linear-gradient(
@@ -27,68 +29,56 @@ $hero-gradient: linear-gradient(
   $hero-gradient-end 100%
 );
 
-// ---------------------------------------------------------------------------
-// Success (green)
-// ---------------------------------------------------------------------------
+// ---- Success (green) ----
 
-$success: #27ae60;
+$success: #27ae60; // 2.8:1, decorative
 $success-tint: rgba(#27ae60, 0.094);
-$success-text: #007a55; // use for text on $success-surface
+$success-text: #007a55; // the readable one
 $success-text-dark: #166534;
 $success-surface: #eafaf1;
 $success-surface-alt: #ecfdf5;
 
-// ---------------------------------------------------------------------------
-// Warning (amber)
-// ---------------------------------------------------------------------------
+// ---- Warning (amber) ----
 
-$warning: #f2c94c; // decorative only — fails AA as text, never use for copy
+$warning: #f2c94c; // yellow on white is hopeless, never put text in this
 $warning-tint: rgba(#f2c94c, 0.094);
-$rating-gold: #ffb900; // star rating fill only — pair with a text value
-$warning-text: #854d0e; // pairs with $warning-surface
-$warning-text-dark: #973c00; // pairs with $warning-surface-alt (Appointments)
+$rating-gold: #ffb900; // star fill only, always show the number alongside
+$warning-text: #854d0e;
+$warning-text-dark: #973c00;
 $warning-text-accent: #bb4d00;
 $warning-surface: #fef9e7;
 $warning-surface-alt: #fffbeb;
 $warning-surface-appt: #fef3c6;
 
-// ---------------------------------------------------------------------------
-// Danger (red)
-// ---------------------------------------------------------------------------
+// ---- Danger (red) ----
 
 $danger: #fb2c36;
-$danger-soft: #eb5757; // borderline contrast — prefer $danger for error text
+$danger-soft: #eb5757; // 3.5:1, borderline. use $danger for error text
 $danger-tint: rgba(#eb5757, 0.094);
 $danger-surface: #fee2e2;
 
-// ---------------------------------------------------------------------------
-// Accent (purple)
-// ---------------------------------------------------------------------------
+// ---- Accent (purple) ----
 
 $accent: #9b51e0;
 $accent-tint: rgba(#9b51e0, 0.094);
-$accent-text: #8200db; // pairs with $accent-surface (Resources)
+$accent-text: #8200db;
 $accent-surface: #f3eafd;
 $accent-surface-alt: #faf5ff;
 
-// ---------------------------------------------------------------------------
-// Neutrals — text
-// ---------------------------------------------------------------------------
+// ---- Text ----
 
 $text-black: #000000;
-$text-primary: #101828; // ~17.9:1 on white
+$text-primary: #101828;
 $text-heading-alt: #1e2939;
 $text-resources: #1f2937;
-$overlay-scrim: rgba(#1f2937, 0.5); // modal / overlay backdrop
-$text-secondary: #364153; // ~9.6:1
-$text-body: #4a5565; // ~7.4:1
-$text-muted: #6a7282; // ~4.9:1 — passes normal text, but only just; check size
-$text-placeholder: #99a1af; // ~2.4:1 — placeholder/disabled ONLY, never body copy
-$text-placeholder-admin: #9ca3af; // same restriction, Admin variant
+$overlay-scrim: rgba(#1f2937, 0.5);
+$text-secondary: #364153;
+$text-body: #4a5565;
+$text-muted: #6a7282; // 4.9:1, scrapes through. don't go lighter than this
+$text-placeholder: #99a1af; // 2.4:1, placeholder and disabled states only
+$text-placeholder-admin: #9ca3af; // same restriction
 
-// ---------------------------------------------------------------------------
-// Neutrals — surfaces & borders
-// ---------------------------------------------------------------------------
+// ---- Surfaces ----
 
 $surface-card: #ffffff;
 $surface-page: #f9fafb;
@@ -96,11 +86,9 @@ $surface-subtle: #f8fafc;
 $surface-hover: #f3f4f6;
 $surface-admin: #f0f2f5;
 $border: #e5e7eb;
-$border-strong: #d1d5dc; // Resources
+$border-strong: #d1d5dc;
 
-// ---------------------------------------------------------------------------
-// Bootstrap 5 variable overrides
-// ---------------------------------------------------------------------------
+// ---- Bootstrap overrides ----
 
 $body-color: $text-body;
 $body-bg: $surface-page;
@@ -118,6 +106,6 @@ $info: $primary;
 
 $border-color: $border;
 
-// Bootstrap's focus ring must stay visible per ACCESSIBILITY_CHECKLIST.md —
-// do not remove or override this to transparent anywhere in the app.
+// Leave this alone. Killing the focus ring makes the whole app
+// unusable without a mouse.
 $focus-ring-color: rgba($primary, 0.5);
