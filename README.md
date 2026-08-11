@@ -44,19 +44,6 @@ firebase deploy --only hosting   # deploy to hosting
 
 https://carebridge-a3.web.app
 
-## Docs
-
-Planning docs are in `docs/`:
-
-- `REQUIREMENTS_CHECKLIST.md` — maps every assessment requirement to a feature
-- `SCOPE.md` — what's actually being built vs cut, and why
-- `PROJECT_PLAN.md` — the two-week schedule
-- `ARCHITECTURE.md` — folder structure, routes, Firestore data model
-- `GIT_WORKFLOW.md` — commit rules (so I don't get the penalty)
-- `ACCESSIBILITY_CHECKLIST.md` — WCAG AA checklist
-- `VIDEO_DEMO_PLAN.md` — script for the demo video
-- `AI_ACKNOWLEDGEMENT.md` — AI use declaration
-- `DESIGN_TOKENS.md` — colours/fonts pulled from the Figma file
 
 ## Design
 
